@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const slugify = require('slugify');
+const geoCoder = require('../utils/geocoder');
 
 const jobSchema = new mongoose.Schema({
   title: {
@@ -32,12 +33,11 @@ const jobSchema = new mongoose.Schema({
       type: [Number],
       index: '2dsphere',
     },
-    formatedAddress: String,
+    formattedAddress: String,
     city: String,
     state: String,
     zipcode: String,
     country: String,
-    
   },
   company: {
     type: String,
@@ -114,6 +114,21 @@ jobSchema.pre('save', function (next) {
   // Create slug before save into DB
   this.slug = slugify(this.title, { lower: true });
   next();
+});
+
+// Setting up Location
+jobSchema.pre('save', async function (next) {
+  const loc = await geoCoder.geocode(this.address);
+
+  this.location = {
+    type: 'Point',
+    coordinates: [loc[0].longitude, loc[0].latitude],
+    formattedAddress: loc[0].formattedAddress,
+    city: loc[0].city,
+    state: loc[0].stateCode,
+    zipcode: loc[0].zipcode,
+    country: loc[0].countryCode,
+  };
 });
 
 module.exports = mongoose.model('Job', jobSchema);
