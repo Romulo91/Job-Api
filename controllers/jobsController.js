@@ -25,7 +25,7 @@ exports.newJob = async (req, res, next) => {
 
 // Get a single job with id and slug => /api/v1/job/:id/:slug
 exports.getJob = async (req, res, next) => {
-  const job = Job.find({
+  const job = await Job.find({
     $and: [{ _id: req.params.id }, { slug: req.params.slug }],
   });
 
@@ -76,7 +76,7 @@ exports.deleteJob = async (req, res, next) => {
     });
   }
 
-  job = await job.remove(req.params.id);
+  job = await job.findByIdAndDelete(req.params.id);
 
   res.status(200).json({
     success: true,
@@ -95,7 +95,7 @@ exports.getJobsInRadius = async (req, res, net) => {
 
   const radius = distance / 3963;
 
-  await Job.find({
+  const jobs = await Job.find({
     location: {
       $geoWithin: { $centerSphere: [[longitude, latitude], radius] },
     },

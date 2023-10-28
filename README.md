@@ -1,3 +1,10 @@
-# JobeeApi
+RESTful API with NodeJS
 
-# from Udemy : https://www.udemy.com/course/build-restful-api-in-nodejs/learn/lecture/18302682#overview
+- MongoDB
+- Node.js
+- Error Handling in Express
+- filter
+- sorting
+- Data Sanitization
+- NoSQL Injections
+- Auth
